@@ -13,7 +13,7 @@ application:
             inputs:
               LOG_LEVEL: debug
             annotations:
-              require-adobe-auth: false
+              require-adobe-auth: true
               final: true
 
           publish-tokens:
@@ -24,7 +24,7 @@ application:
               LOG_LEVEL: debug
               GITHUB_TOKEN: $GITHUB_TOKEN
             annotations:
-              require-adobe-auth: false
+              require-adobe-auth: true
               final: true
 
           github-branch-pr:
