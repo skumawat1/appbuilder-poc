@@ -12,7 +12,10 @@
             "files": ["web-src/**/*.js"],
             "parserOptions": {
                 "ecmaVersion": "latest",
-                "sourceType": "module"
+                "sourceType": "module",
+                "ecmaFeatures": {
+                    "importAssertions": true
+                }
             },
             "env": {
                 "browser": true,

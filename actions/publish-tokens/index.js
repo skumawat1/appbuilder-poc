@@ -92,7 +92,7 @@ async function main (params) {
       return errorResponse(404, `Brand '${brandName}' not found. Save tokens first using the manage-tokens action.`, logger)
     }
 
-    const tokens = entry.value
+    const tokens = typeof entry.value === 'string' ? JSON.parse(entry.value) : entry.value
     logger.info(`Loaded tokens for '${safeName}'`)
 
     // ------------------------------------------------------------------

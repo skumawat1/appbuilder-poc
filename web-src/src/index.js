@@ -223,7 +223,7 @@ function handleAuthError (err) {
 async function loadBrands () {
   setLoading(true, 'Loading brands…')
   try {
-    const res = await (
+    const res = await actionWebInvoke(
       getActionUrl('manage-tokens'),
       getAuthHeaders(),
       { operation: 'list' }

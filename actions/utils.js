@@ -151,7 +151,12 @@ function flattenObject (obj, prefix = '') {
       !Array.isArray(value) &&
       !isCssValue(value)
     ) {
-      Object.assign(out, flattenObject(value, k))
+      // Token descriptor shape: { type, default, label } — extract the actual value
+      if ('default' in value) {
+        out[k] = value.default
+      } else {
+        Object.assign(out, flattenObject(value, k))
+      }
     } else {
       out[k] = value
     }

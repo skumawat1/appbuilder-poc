@@ -7,6 +7,8 @@
  *   - Action invocation helper (actionWebInvoke)
  */
 
+import tokenSchema from '../../config/token-schema.json' assert { type: 'json' };
+
 // ---------------------------------------------------------------------------
 // CSS Token Helpers  (mirrors actions/utils.js — no server round-trip needed)
 // ---------------------------------------------------------------------------
@@ -18,7 +20,9 @@
  * @param {object} obj
  * @param {string} prefix
  * @returns {object} flat key → value map
+ * import jsonData from './data.json' assert { type: 'json' };
  */
+
 export function flattenObject (obj, prefix = '') {
   const out = {}
   for (const [key, value] of Object.entries(obj)) {
@@ -87,77 +91,23 @@ export function toCssVariables (flat, prefix = '--brand-') {
 }
 
 // ---------------------------------------------------------------------------
-// Schema — inlined for reliability (no network fetch required)
+// Schema — imported from config/token-schema.json
 // ---------------------------------------------------------------------------
-
-const INLINE_SCHEMA = {
-  colors: {
-    primary:       { type: 'color',  default: '#e87722', label: 'Primary Color' },
-    secondary:     { type: 'color',  default: '#003865', label: 'Secondary Color' },
-    background:    { type: 'color',  default: '#ffffff', label: 'Background' },
-    surface:       { type: 'color',  default: '#f5f5f5', label: 'Surface' },
-    error:         { type: 'color',  default: '#d32f2f', label: 'Error' },
-    onPrimary:     { type: 'color',  default: '#ffffff', label: 'On Primary' },
-    onSecondary:   { type: 'color',  default: '#ffffff', label: 'On Secondary' },
-    textPrimary:   { type: 'color',  default: '#212121', label: 'Text Primary' },
-    textSecondary: { type: 'color',  default: '#757575', label: 'Text Secondary' }
-  },
-  typography: {
-    fontFamilyBase:    { type: 'string', default: '"Source Sans Pro", Arial, sans-serif', label: 'Font Family' },
-    fontSizeBase:      { type: 'size',   default: '16px', label: 'Base Font Size' },
-    fontSizeSmall:     { type: 'size',   default: '12px', label: 'Small Font Size' },
-    fontSizeLarge:     { type: 'size',   default: '20px', label: 'Large Font Size' },
-    fontWeightRegular: { type: 'string', default: '400',  label: 'Weight Regular' },
-    fontWeightBold:    { type: 'string', default: '700',  label: 'Weight Bold' },
-    lineHeightBase:    { type: 'string', default: '1.5',  label: 'Line Height' }
-  },
-  spacing: {
-    xs:  { type: 'size', default: '4px',  label: 'XS (4px)' },
-    sm:  { type: 'size', default: '8px',  label: 'SM (8px)' },
-    md:  { type: 'size', default: '16px', label: 'MD (16px)' },
-    lg:  { type: 'size', default: '24px', label: 'LG (24px)' },
-    xl:  { type: 'size', default: '32px', label: 'XL (32px)' },
-    xxl: { type: 'size', default: '48px', label: 'XXL (48px)' }
-  },
-  borderRadius: {
-    small:  { type: 'size',   default: '4px',    label: 'Small (4px)' },
-    medium: { type: 'size',   default: '8px',    label: 'Medium (8px)' },
-    large:  { type: 'size',   default: '16px',   label: 'Large (16px)' },
-    pill:   { type: 'string', default: '9999px', label: 'Pill (9999px)' }
-  },
-  shadows: {
-    card:  { type: 'string', default: '0 2px 4px rgba(0,0,0,0.12)', label: 'Card Shadow' },
-    modal: { type: 'string', default: '0 8px 24px rgba(0,0,0,0.2)', label: 'Modal Shadow' }
-  },
-  breakpoints: {
-    mobile:  { type: 'size', default: '480px',  label: 'Mobile' },
-    tablet:  { type: 'size', default: '768px',  label: 'Tablet' },
-    desktop: { type: 'size', default: '1024px', label: 'Desktop' },
-    wide:    { type: 'size', default: '1280px', label: 'Wide' }
-  }
-}
 
 let _schemaCache = null
 
 /**
- * Return the token schema.
- * First tries to fetch token-schema.json (allows runtime overrides);
- * falls back to the inlined INLINE_SCHEMA so the app always works.
+ * Return the token schema from the imported config/token-schema.json.
+ * Throws an error if the schema is not available.
  *
  * @returns {Promise<object>} the parsed schema object
  */
 export async function loadSchema () {
   if (_schemaCache) return _schemaCache
-  try {
-    const res = await fetch('./token-schema.json')
-    if (res.ok) {
-      _schemaCache = await res.json()
-      return _schemaCache
-    }
-  } catch (e) {
-    console.warn('token-schema.json fetch failed, using inlined schema', e)
+  if (!tokenSchema) {
+    throw new Error('token-schema.json is not available. Ensure config/token-schema.json exists and is properly imported.')
   }
-  _schemaCache = INLINE_SCHEMA
+  _schemaCache = tokenSchema
   return _schemaCache
 }
 
